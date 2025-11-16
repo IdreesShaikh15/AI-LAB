@@ -1,56 +1,56 @@
 goal = [[1,2,3],
-        [8.0.4],
+        [8,0,4],
         [7,6,5]]
 
 moves = [(-1,0),(1,0),(0,-1),(0,1)]
 
-def find_zero(state):
+def find_zero(s):
     for i in range(3):
         for j in range(3):
-            if state[i][j] == 0:
+            if s[i][j] == 0:
                 return i, j
 
-def get_neighbors(state):
-    x, y = find_zero(state)
-    neighbors = []
+def get_neighbors(s):
+    x, y = find_zero(s)
+    out = []
     for dx, dy in moves:
         nx, ny = x+dx, y+dy
         if 0 <= nx < 3 and 0 <= ny < 3:
-            new_state = [row[:] for row in state]
-            new_state[x][y], new_state[nx][ny] = new_state[nx][ny], new_state[x][y]
-            neighbors.append(new_state)
-    return neighbors
+            t = [r[:] for r in s]
+            t[x][y], t[nx][ny] = t[nx][ny], t[x][y]
+            out.append(t)
+    return out
 
-def dfs(state, visited):
-    if state == goal:
-        return [state]
-    visited.add(str(state))
-    for neighbor in get_neighbors(state):
-        if str(neighbor) not in visited:
-            path = dfs(neighbor, visited)
-            if path:
-                return [state] + path
+def dfs(s, visited):
+    if s == goal:
+        return [s]
+    visited.add(str(s))
+    for nxt in get_neighbors(s):
+        if str(nxt) not in visited:
+            p = dfs(nxt, visited)
+            if p:
+                return [s] + p
     return None
 
-def dls(state, goal, depth, path, visited):
-    if state == goal:
+def dls(s, goal, depth, path, visited):
+    if s == goal:
         return path
     if depth == 0:
         return None
-    visited.add(str(state))
-    for neighbor in get_neighbors(state):
-        if str(neighbor) not in visited:
-            result = dls(neighbor, goal, depth-1, path+[neighbor], visited)
-            if result:
-                return result
+    visited.add(str(s))
+    for nxt in get_neighbors(s):
+        if str(nxt) not in visited:
+            res = dls(nxt, goal, depth-1, path+[nxt], visited)
+            if res:
+                return res
     return None
 
-def ids(start, goal, max_depth=20):
-    for depth in range(max_depth+1):
+def ids(start, goal, limit=20):
+    for d in range(limit+1):
         visited = set()
-        result = dls(start, goal, depth, [start], visited)
-        if result:
-            return result
+        r = dls(start, goal, d, [start], visited)
+        if r:
+            return r
     return None
 
 if __name__ == "__main__":
@@ -58,24 +58,26 @@ if __name__ == "__main__":
              [8,6,4],
              [0,7,5]]
 
-    print("Solving 8-Puzzle using DFS:")
-    solution_dfs = dfs(start, set())
-    if solution_dfs:
-        print(f"DFS solution found in {len(solution_dfs)-1} moves:")
-        for step in solution_dfs:
-            for row in step:
-                print(row)
-            print("----------------------------------------------")
+    print("DFS:")
+    sol1 = dfs(start, set())
+    if sol1:
+        print("Moves:", len(sol1)-1)
+        for st in sol1:
+            for r in st:
+                print(r)
+            print("-"*40)
     else:
-        print("No solution found with DFS.")
+        print("No solution.")
 
-    print("\nSolving 8-Puzzle using IDS:")
-    solution_ids = ids(start, goal, max_depth=20)
-    if solution_ids:
-        print(f"IDS solution found in {len(solution_ids)-1} moves:")
-        for step in solution_ids:
-            for row in step:
-                print(row)
-            print("---------------------------------------------")
+    print("\nIDS:")
+    sol2 = ids(start, goal, 20)
+    if sol2:
+        print("Moves:", len(sol2)-1)
+        for st in sol2:
+            for r in st:
+                print(r)
+            print("-"*40)
     else:
-        print("No solution found with IDS.")
+        print("No solution.")
+
+ 
